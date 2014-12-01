@@ -115,12 +115,12 @@ public class FetsClient {
 		moneyTransfer.setBillerTransactionRef("0987654");
 		moneyTransfer.setChannelId(1);
 		moneyTransfer.setCharge(5);
-		moneyTransfer.setPayerNumber("08063305711");
-		moneyTransfer.setPayerWalletId(5544);
-		moneyTransfer.setRecieverNumber("08092041723");
+		moneyTransfer.setPayerNumber("2348170730549");
+		moneyTransfer.setPayerWalletId(3085);
+		moneyTransfer.setRecieverNumber("2348124442975");
 		moneyTransfer.setRemarks("Send to kachi");
 		moneyTransfer.setTransactionId("982379479032847");
-		moneyTransfer.setTransactionPin("0000");
+		moneyTransfer.setTransactionPin("3085");
 
 		// doCashOut(moneyTransfer);
 		doCashIn(moneyTransfer);
