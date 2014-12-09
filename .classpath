@@ -4,7 +4,7 @@
 	<classpathentry exported="true" kind="var" path="ECLIPSE_WORKSPACE/.metadata/.plugins/org.wso2.developerstudio.eclipse.libraries/lib/axis2_1.6.1.wso2v10.jar"/>
 	<classpathentry exported="true" kind="var" path="ECLIPSE_WORKSPACE/.metadata/.plugins/org.wso2.developerstudio.eclipse.libraries/lib/axiom_1.2.11.wso2v4.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AxisLibrary"/>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Wso2Lib"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
