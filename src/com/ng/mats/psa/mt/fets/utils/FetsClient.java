@@ -78,6 +78,7 @@ public class FetsClient {
 		requestServiceResponse.setTranRefNum(moneyTransfer
 				.getBillerTransactionRef());
 		requestServiceResponse.setWallet_id(moneyTransfer.getPayerWalletId());
+
 		/*
 		 * p2PTransfer.setArg0(moneyTransfer.getPayerNumber());
 		 * p2PTransfer.setArg1(moneyTransfer.getPayerWalletId());
