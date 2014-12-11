@@ -310,7 +310,7 @@ public class FetsClient {
 		moneyTransfer.setTransactionId("982379479032847");
 		moneyTransfer.setTransactionPin("5678");
 
-		// doCashOut(moneyTransfer);
-		doCashIn(moneyTransfer);
+		doCashOut(moneyTransfer);
+		// doCashIn(moneyTransfer);
 	}
 }
