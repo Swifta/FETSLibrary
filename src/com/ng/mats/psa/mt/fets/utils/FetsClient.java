@@ -112,6 +112,41 @@ public class FetsClient {
 		return serviceResponse;
 	}
 
+	public static String getBalance(MoneyTransfer moneyTransfer) {
+		ServiceResponse serviceResponse = new ServiceResponse(), cashoutRequestResp = new ServiceResponse();
+		logger.info("----------------------start of FETS cash out Type "
+				+ moneyTransfer.getPayerNumber() + " ::: "
+				+ moneyTransfer.getTransactionPin());
+		AuthenticateResponse authenticationResponse = doAuthentication(
+				moneyTransfer.getPayerNumber(),
+				moneyTransfer.getTransactionPin());
+		Wallet[] walletArray = authenticationResponse.getWallets();
+		// authenticationResponse.getw
+		logger.info("----------------------start of FETS cashout Type ");
+		int count = 1;
+		for (Wallet newWallet : walletArray) {
+			logger.info("----------------------iterating through array of wallet : "
+					+ count++);
+			if (newWallet.getDefaultWallet()) {
+				logger.info("----------------------Default wallet "
+						+ newWallet.getId());
+				newWallet.getAvailableBalance();
+				moneyTransfer.setPayerWalletId(newWallet.getId());
+				break;
+			} else {
+				logger.info("----------------------Wallet not default wallet");
+			}
+		}
+		logger.info("----------------------Before setting the ServiceResponse parameters");
+
+		logger.info("----------------------After setting acceptPayment attributes\n"
+				+ moneyTransfer.toString());
+		String balance = String.valueOf(authenticationResponse
+				.getWalletAvailableBalance());
+		return balance;
+
+	}
+
 	public static void printResponseDetails(
 			ServiceResponse requestServiceResponse) {
 		logger.info("---------------------- p2PTransfer Response is not null \nMessage:: \nAccount number::"
@@ -174,6 +209,90 @@ public class FetsClient {
 				+ requestServiceResponse.getWallet_id());
 	}
 
+	public static void printLoginResponseDetails(
+			AuthenticateResponse requestServiceResponse) {
+		logger.info("---------------------- p2PTransfer Response is not null \nMessage:: \nAccount number::"
+				+ requestServiceResponse.getAccount_no()
+				+ "\n---------------------- Account Name::"
+				+ requestServiceResponse.getAccountName()
+				+ "\n---------------------- Active Status::"
+				+ requestServiceResponse.getActiveStatus()
+				+ "\n---------------------- Agent ID::"
+				+ requestServiceResponse.getAgent_id()
+				+ "\n---------------------- Agent Password::"
+				+ requestServiceResponse.getAgent_password()
+				+ "\n---------------------- Amount::"
+				+ requestServiceResponse.getAmount()
+				+ "\n---------------------- Bank Code::"
+				+ requestServiceResponse.getBank_code()
+				+ "\n---------------------- Beneficiary MSISDN::"
+				+ requestServiceResponse.getBen_msisdn()
+				+ "\n---------------------- Channel ID::"
+				+ requestServiceResponse.getChannel_id()
+				+ "\n---------------------- Confirm Password::"
+				+ requestServiceResponse.getConfirm_password()
+				+ "\n---------------------- Customer ID::"
+				+ requestServiceResponse.getCustomer_id()
+				+ "\n---------------------- Customer MSISDN::"
+				+ requestServiceResponse.getCustomer_msisdn()
+				+ "\n---------------------- Customer name::"
+				+ requestServiceResponse.getCustomerName()
+				+ "\n---------------------- Customer reference number::"
+				+ requestServiceResponse.getCustomerRefNum()
+				+ "\n---------------------- Customer type::"
+				+ requestServiceResponse.getCustomerType()
+				+ "\n---------------------- Destination MSISDN::"
+				+ requestServiceResponse.getDestination_msisdn()
+				+ "\n---------------------- First name::"
+				+ requestServiceResponse.getFirstname()
+				+ "\n---------------------- ID::"
+				+ requestServiceResponse.getId()
+				+ "\n---------------------- Last name::"
+				+ requestServiceResponse.getLastname()
+				+ "\n---------------------- Merchant ID::"
+				+ requestServiceResponse.getMerchant_id()
+				+ "\n---------------------- Message::"
+				+ requestServiceResponse.getMessage()
+				+ "\n---------------------- Middle name::"
+				+ requestServiceResponse.getMiddlename()
+				+ "\n---------------------- MSISDN::"
+				+ requestServiceResponse.getMsisdn()
+				+ "\n---------------------- Narration::"
+				+ requestServiceResponse.getNaration()
+				+ "\n---------------------- New Password::"
+				+ requestServiceResponse.getNew_password()
+				+ "\n---------------------- Old Password::"
+				+ requestServiceResponse.getOld_password()
+				+ "\n---------------------- Password::"
+				+ requestServiceResponse.getPassword()
+				+ "\n---------------------- Product ID::"
+				+ requestServiceResponse.getProduct_id()
+				+ "\n---------------------- Recipient MSISDN::"
+				+ requestServiceResponse.getRecipient_msisdn()
+				+ "\n---------------------- Redeem Code::"
+				+ requestServiceResponse.getRedeemCode()
+				+ "\n---------------------- Response Code::"
+				+ requestServiceResponse.getResponseCode()
+				+ "\n---------------------- Transaction REference number::"
+				+ requestServiceResponse.getTnxRefNo()
+				+ "\n---------------------- Transaction reference::"
+				+ requestServiceResponse.getTranRefNum()
+				+ "\n---------------------- Wallet ID::"
+				+ requestServiceResponse.getWallet_id()
+				+ "\n---------------------- Wallet available balance::"
+				+ requestServiceResponse.getWalletAvailableBalance()
+				+ "\n---------------------- Wallet ledger balance::"
+				+ requestServiceResponse.getWalletLedgerBalance()
+				+ "\n---------------------- Wallet name:::"
+				+ requestServiceResponse.getWalletName()
+				+ "\n---------------------- Success::"
+				+ requestServiceResponse.getSuccess()
+				+ "\n---------------------- Transaction Reference Number::"
+				+ requestServiceResponse.getTnxRefNo()
+				+ "\n---------------------- Transfer Reference Number::"
+				+ requestServiceResponse.getTranRefNum());
+	}
+
 	public static AuthenticateResponse doAuthentication(String username,
 			String password) {
 		logger.info("---------------------Inside doAuthentication");
@@ -200,7 +319,8 @@ public class FetsClient {
 		if (authenticateResponse != null) {
 			logger.info("----------------------authenticateResponse is not null");
 			response = authenticateResponse.getAuthenticate();
-			printResponseDetails((ServiceResponse) response);
+			// response.s
+			printLoginResponseDetails(response);
 
 		} else {
 			logger.info("----------------------authenticateResponse is null");
@@ -275,6 +395,8 @@ public class FetsClient {
 			fetsStub = new FetsServiceStub();
 			logger.info("----------------------After calling fets stub");
 			cashOutRequestResponse = fetsStub.cashOutRequest(cashOutRequest);
+			// fetsStub.redeemP2UnregisteredTransfer(redeemP2UnregisteredTransfer)
+			// fetsStub.
 		} catch (RemoteException e) {
 			// TODO Auto-generated catch block
 			logger.info("----------------------Remote Exception after calling fets");
@@ -303,15 +425,15 @@ public class FetsClient {
 		moneyTransfer.setBillerTransactionRef("0987654");
 		moneyTransfer.setChannelId(1);
 		moneyTransfer.setCharge(5);
-		moneyTransfer.setPayerNumber("2348170730549");
+		moneyTransfer.setPayerNumber("2348062239531");
 		// moneyTransfer.setPayerWalletId(3085);
-		// moneyTransfer.setRecieverNumber("2348124442975");
-		moneyTransfer.setRecieverNumber("2348170730549");
+		moneyTransfer.setRecieverNumber("2348063005168");
 		moneyTransfer.setRemarks("Send to kachi");
 		moneyTransfer.setTransactionId("982379479032847");
 		moneyTransfer.setTransactionPin("5678");
-
+		// logger.info("THE FINAL BALANCE IS>>>>>" + getBalance(moneyTransfer));
 		doCashOut(moneyTransfer);
+		// getBalance(moneyTransfer);
 		// doCashIn(moneyTransfer);
 	}
 }
