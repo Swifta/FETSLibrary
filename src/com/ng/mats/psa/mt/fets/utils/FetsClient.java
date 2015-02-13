@@ -419,7 +419,7 @@ public class FetsClient {
 
 	public static void main(String[] args) {
 		MoneyTransfer moneyTransfer = new MoneyTransfer();
-		moneyTransfer.setAmount(100);
+		moneyTransfer.setAmount(120);
 		moneyTransfer.setBillerMerchantId(12345);
 		moneyTransfer.setBillerProductId(1234);
 		moneyTransfer.setBillerTransactionRef("0987654");
