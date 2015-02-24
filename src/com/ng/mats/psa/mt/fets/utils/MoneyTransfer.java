@@ -13,6 +13,27 @@ public class MoneyTransfer {
 	private double amount;
 	private long charge;
 	private String billerTransactionRef;
+	private String accountNumber;
+	private String bankCode;
+	private String accountName;
+
+	public MoneyTransfer() {
+		this.transactionId = "";
+		this.payerNumber = "";
+		this.transactionPin = "";
+		this.recieverNumber = "";
+		this.remarks = "";
+		this.billerTransactionRef = "";
+		this.accountNumber = "";
+		this.bankCode = "";
+		this.accountName = "";
+		this.payerWalletId = 0l;
+		this.channelId = 0l;
+		this.billerMerchantId = 0l;
+		this.billerProductId = 0l;
+		this.charge = 0l;
+		this.amount = 0.0;
+	}
 
 	public String toString() {
 		return "TransactionId  : ".concat(transactionId)
@@ -30,7 +51,9 @@ public class MoneyTransfer {
 				.concat(String.valueOf(amount)).concat("\nCharge : ")
 				.concat(String.valueOf(charge))
 				.concat("\nBiller Transaction Ref : ")
-				.concat(billerTransactionRef);
+				.concat(billerTransactionRef).concat("\nAccount Number : ")
+				.concat(accountNumber).concat("\nAccount Name : ")
+				.concat(accountName).concat("\nBank Code : ").concat(bankCode);
 
 	}
 
@@ -128,6 +151,30 @@ public class MoneyTransfer {
 
 	public void setBillerTransactionRef(String billerTransactionRef) {
 		this.billerTransactionRef = billerTransactionRef;
+	}
+
+	public String getAccountNumber() {
+		return accountNumber;
+	}
+
+	public void setAccountNumber(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+
+	public String getBankCode() {
+		return bankCode;
+	}
+
+	public void setBankCode(String bankCode) {
+		this.bankCode = bankCode;
+	}
+
+	public String getAccountName() {
+		return accountName;
+	}
+
+	public void setAccountName(String accountName) {
+		this.accountName = accountName;
 	}
 
 }
