@@ -123,10 +123,10 @@ public class FetsClient {
 		ServiceResponse serviceResponse = new ServiceResponse(), cashoutRequestResp = new ServiceResponse();
 		String balance = "";
 		logger.info("----------------------start of FETS cash out Type "
-				+ moneyTransfer.getPayerNumber() + " ::: "
+				+ moneyTransfer.getRecieverNumber() + " ::: "
 				+ moneyTransfer.getTransactionPin());
 		AuthenticateResponse authenticationResponse = doAuthentication(
-				moneyTransfer.getPayerNumber(),
+				moneyTransfer.getRecieverNumber(),
 				moneyTransfer.getTransactionPin());
 		if (authenticationResponse != null) {
 			Wallet[] walletArray = authenticationResponse.getWallets();
@@ -345,10 +345,10 @@ public class FetsClient {
 	public static ServiceResponse doCashOut(MoneyTransfer moneyTransfer) {
 		ServiceResponse serviceResponse = new ServiceResponse(), cashoutRequestResp = new ServiceResponse();
 		logger.info("----------------------start of FETS cash out Type "
-				+ moneyTransfer.getPayerNumber() + " ::: "
+				+ moneyTransfer.getRecieverNumber() + " ::: "
 				+ moneyTransfer.getTransactionPin());
 		AuthenticateResponse authenticationResponse = doAuthentication(
-				moneyTransfer.getPayerNumber(),
+				moneyTransfer.getRecieverNumber(),
 				moneyTransfer.getTransactionPin());
 		if (authenticationResponse != null) {
 			Wallet[] walletArray = authenticationResponse.getWallets();
@@ -383,14 +383,14 @@ public class FetsClient {
 			// cashoutRequestResp.setConfirm_password(param);
 			// cashoutRequestResp.setCustomer_id(param);
 			cashoutRequestResp.setCustomer_msisdn(moneyTransfer
-					.getRecieverNumber());
+					.getPayerNumber());
 			// cashoutRequestResp.setCustomerRefNum();
 			// cashoutRequestResp
 			// .setDestination_msisdn(moneyTransfer.getRecieverNumber());
 			// cashoutRequestResp.setId(param);
 			// cashoutRequestResp.setMerchant_id(param);
 			// cashoutRequestResp.setMessage(param);
-			cashoutRequestResp.setMsisdn(moneyTransfer.getPayerNumber());
+			cashoutRequestResp.setMsisdn(moneyTransfer.getRecieverNumber());
 			cashoutRequestResp.setNaration(moneyTransfer.getRemarks());
 			// cashoutRequestResp.setNew_password(param);
 			// cashoutRequestResp.setOld_password(param);
@@ -531,27 +531,34 @@ public class FetsClient {
 	}
 
 	public static void main(String[] args) {
+		// for cashout, payernumber = customer and reciever number = agent:::::
+		// for cashing, payernumber = agent and reciever number = customer
+
 		MoneyTransfer moneyTransfer = new MoneyTransfer();
-		moneyTransfer.setAmount(203);
+		moneyTransfer.setAmount(10);
 		moneyTransfer.setBillerMerchantId(12345);
 		moneyTransfer.setBillerProductId(1234);
 		moneyTransfer.setBillerTransactionRef("0987654");
 		moneyTransfer.setChannelId(1);
 		moneyTransfer.setCharge(5);
-		moneyTransfer.setPayerNumber("2348062239531");
+		moneyTransfer.setPayerNumber("2348063005168");
+		// new agent detail 2347080306482
+		// agent default 2348062239531
+		// customer default 2348063005168
 		// moneyTransfer.setPayerWalletId(3085);
-		moneyTransfer.setRecieverNumber("2348063005168");
+		moneyTransfer.setRecieverNumber("2347080306482");
 		moneyTransfer.setRemarks("Send to kachi");
 		moneyTransfer.setTransactionId("982379479032847");
-		moneyTransfer.setTransactionPin("5678");
+		// old agent pin::::moneyTransfer.setTransactionPin("5678");
+		moneyTransfer.setTransactionPin("password");
 		moneyTransfer.setAccountName("MATS Account");
 		moneyTransfer.setAccountNumber("3001500792");
 		moneyTransfer.setBankCode("0002");
 		// logger.info("THE FINAL BALANCE IS>>>>>" + getBalance(moneyTransfer));
-		// doCashOut(moneyTransfer);
+		doCashOut(moneyTransfer);
 		// logger.info("----------------------------Balance retrieved:::"
 		// + getBalance(moneyTransfer));
 		// doCashIn(moneyTransfer);
-		walletToBank(moneyTransfer);
+		// walletToBank(moneyTransfer);
 	}
 }
