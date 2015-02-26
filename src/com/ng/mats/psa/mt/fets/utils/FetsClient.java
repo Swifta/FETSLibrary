@@ -531,34 +531,16 @@ public class FetsClient {
 	}
 
 	public static void main(String[] args) {
-		// for cashout, payernumber = customer and reciever number = agent:::::
-		// for cashing, payernumber = agent and reciever number = customer
 
-		MoneyTransfer moneyTransfer = new MoneyTransfer();
-		moneyTransfer.setAmount(10);
-		moneyTransfer.setBillerMerchantId(12345);
-		moneyTransfer.setBillerProductId(1234);
-		moneyTransfer.setBillerTransactionRef("0987654");
-		moneyTransfer.setChannelId(1);
-		moneyTransfer.setCharge(5);
-		moneyTransfer.setPayerNumber("2348063005168");
-		// new agent detail 2347080306482
-		// agent default 2348062239531
-		// customer default 2348063005168
-		// moneyTransfer.setPayerWalletId(3085);
-		moneyTransfer.setRecieverNumber("2347080306482");
-		moneyTransfer.setRemarks("Send to kachi");
-		moneyTransfer.setTransactionId("982379479032847");
-		// old agent pin::::moneyTransfer.setTransactionPin("5678");
-		moneyTransfer.setTransactionPin("password");
-		moneyTransfer.setAccountName("MATS Account");
-		moneyTransfer.setAccountNumber("3001500792");
-		moneyTransfer.setBankCode("0002");
-		// logger.info("THE FINAL BALANCE IS>>>>>" + getBalance(moneyTransfer));
-		doCashOut(moneyTransfer);
+		MoneyTransfer moneyTransfer = new FetsPropertyValues()
+				.getPropertyValues();
+		doCashOut(moneyTransfer);// logger.info("THE FINAL BALANCE IS>>>>>" +
+									// getBalance(moneyTransfer));
+
 		// logger.info("----------------------------Balance retrieved:::"
 		// + getBalance(moneyTransfer));
 		// doCashIn(moneyTransfer);
 		// walletToBank(moneyTransfer);
 	}
+
 }
