@@ -63,6 +63,11 @@ public class FetsPropertyValues {
 		moneyTransfer.setRemarks(prop.getProperty("Remarks_" + parameterType));
 		moneyTransfer.setTransactionId(prop.getProperty("TransactionId_"
 				+ parameterType));
+		moneyTransfer.setReference(prop.getProperty("Reference_"
+				+ parameterType));
+		logger.info("=======THE PROPERTY OF URL FROM CONFIG IS========="
+				+ prop.getProperty("Url_" + parameterType));
+		moneyTransfer.setUrl(prop.getProperty("Url_" + parameterType));
 		// old agent pin::::moneyTransfer.setTransactionPin("5678");
 		moneyTransfer.setTransactionPin(prop.getProperty("TransactionPin_"
 				+ parameterType));

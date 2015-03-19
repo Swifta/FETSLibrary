@@ -6,5 +6,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/AxisLibrary"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/J2SE-1.5"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.USER_LIBRARY/Wso2Lib"/>
+	<classpathentry kind="lib" path="lib/json_bb.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

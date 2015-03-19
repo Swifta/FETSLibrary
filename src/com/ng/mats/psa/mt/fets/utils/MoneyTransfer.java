@@ -16,6 +16,8 @@ public class MoneyTransfer {
 	private String accountNumber;
 	private String bankCode;
 	private String accountName;
+	private String url;
+	private String reference;
 
 	public MoneyTransfer() {
 		this.transactionId = "";
@@ -33,6 +35,8 @@ public class MoneyTransfer {
 		this.billerProductId = 0l;
 		this.charge = 0l;
 		this.amount = 0.0;
+		this.url = "";
+		this.reference = "";
 	}
 
 	public String toString() {
@@ -53,7 +57,9 @@ public class MoneyTransfer {
 				.concat("\nBiller Transaction Ref : ")
 				.concat(billerTransactionRef).concat("\nAccount Number : ")
 				.concat(accountNumber).concat("\nAccount Name : ")
-				.concat(accountName).concat("\nBank Code : ").concat(bankCode);
+				.concat(accountName).concat("\nBank Code : ").concat(bankCode)
+				.concat("\nURL : ").concat(url).concat("\nReference : ")
+				.concat(reference);
 
 	}
 
@@ -175,6 +181,22 @@ public class MoneyTransfer {
 
 	public void setAccountName(String accountName) {
 		this.accountName = accountName;
+	}
+
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+	public String getReference() {
+		return reference;
+	}
+
+	public void setReference(String reference) {
+		this.reference = reference;
 	}
 
 }
