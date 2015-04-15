@@ -1,6 +1,7 @@
 package com.ng.mats.psa.mt.fets.utils;
 
 public class MoneyTransfer {
+	private String parameterType;
 	private String transactionId;
 	private long payerWalletId;
 	private String payerNumber;
@@ -18,8 +19,13 @@ public class MoneyTransfer {
 	private String accountName;
 	private String url;
 	private String reference;
+	private String redeemCode;
+	private String txnRefNo;
+	private long agentId;
+	private String recipientMsisdn;
 
 	public MoneyTransfer() {
+		this.parameterType = "";
 		this.transactionId = "";
 		this.payerNumber = "";
 		this.transactionPin = "";
@@ -37,6 +43,10 @@ public class MoneyTransfer {
 		this.amount = 0.0;
 		this.url = "";
 		this.reference = "";
+		this.redeemCode = "";
+		this.txnRefNo = "";
+		this.agentId = 0l;
+		this.recipientMsisdn = "";
 	}
 
 	public String toString() {
@@ -59,7 +69,11 @@ public class MoneyTransfer {
 				.concat(accountNumber).concat("\nAccount Name : ")
 				.concat(accountName).concat("\nBank Code : ").concat(bankCode)
 				.concat("\nURL : ").concat(url).concat("\nReference : ")
-				.concat(reference);
+				.concat(reference).concat("\nRedeem Code : ")
+				.concat(redeemCode).concat("\nTxnRefNo : ").concat(txnRefNo)
+				.concat("\nAgent ID : ").concat(String.valueOf(agentId))
+				.concat("\nRecipient MSISDN : ").concat(recipientMsisdn)
+				.concat("\nParameter Type : ").concat(parameterType);
 
 	}
 
@@ -197,6 +211,46 @@ public class MoneyTransfer {
 
 	public void setReference(String reference) {
 		this.reference = reference;
+	}
+
+	public String getRedeemCode() {
+		return redeemCode;
+	}
+
+	public void setRedeemCode(String redeemCode) {
+		this.redeemCode = redeemCode;
+	}
+
+	public String getTxnRefNo() {
+		return txnRefNo;
+	}
+
+	public void setTxnRefNo(String txnRefNo) {
+		this.txnRefNo = txnRefNo;
+	}
+
+	public long getAgentId() {
+		return agentId;
+	}
+
+	public void setAgentId(long agentId) {
+		this.agentId = agentId;
+	}
+
+	public String getRecipientMsisdn() {
+		return recipientMsisdn;
+	}
+
+	public void setRecipientMsisdn(String recipientMsisdn) {
+		this.recipientMsisdn = recipientMsisdn;
+	}
+
+	public String getParameterType() {
+		return parameterType;
+	}
+
+	public void setParameterType(String parameterType) {
+		this.parameterType = parameterType;
 	}
 
 }

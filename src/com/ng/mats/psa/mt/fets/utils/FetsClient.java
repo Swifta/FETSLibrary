@@ -1,8 +1,14 @@
 package com.ng.mats.psa.mt.fets.utils;
 
+import java.io.File;
+import java.io.IOException;
+import java.net.UnknownHostException;
 import java.rmi.RemoteException;
 import java.util.logging.Logger;
 
+import org.apache.axis2.AxisFault;
+import org.apache.axis2.transport.http.HTTPConstants;
+import org.apache.commons.httpclient.protocol.Protocol;
 import org.json.me.JSONException;
 import org.json.me.JSONObject;
 
@@ -12,13 +18,49 @@ import com.fets.mm.soap.services.FetsServiceStub.AuthenticateResponse;
 import com.fets.mm.soap.services.FetsServiceStub.CashOutRequest;
 import com.fets.mm.soap.services.FetsServiceStub.P2BankTransfer;
 import com.fets.mm.soap.services.FetsServiceStub.P2PTransfer;
+import com.fets.mm.soap.services.FetsServiceStub.RedeemP2UnregisteredTransfer;
 import com.fets.mm.soap.services.FetsServiceStub.ServiceResponse;
 import com.fets.mm.soap.services.FetsServiceStub.Wallet;
+
+/*import com.fets.mm.soap.services.test.FetsServiceStub;
+ import com.fets.mm.soap.services.test.FetsServiceStub.Authenticate;
+ import com.fets.mm.soap.services.test.FetsServiceStub.AuthenticateResponse;
+ import com.fets.mm.soap.services.test.FetsServiceStub.CashOutRequest;
+ import com.fets.mm.soap.services.test.FetsServiceStub.P2BankTransfer;
+ import com.fets.mm.soap.services.test.FetsServiceStub.P2PTransfer;
+ import com.fets.mm.soap.services.test.FetsServiceStub.RedeemP2UnregisteredTransfer;
+ import com.fets.mm.soap.services.test.FetsServiceStub.ServiceResponse;
+ import com.fets.mm.soap.services.test.FetsServiceStub.Wallet;
+ */
 
 public class FetsClient {
 	private static FetsServiceStub fetsStub;
 	private static final Logger logger = Logger.getLogger(FetsClient.class
 			.getName());
+	private String wso2appserverHome = "";
+
+	public FetsClient(String parameterType) throws AxisFault {
+		fetsStub = new FetsServiceStub();
+		fetsStub._getServiceClient().getOptions().setManageSession(true);
+		long timeOutInMilliSeconds = (5 * 36 * 1000);
+		fetsStub._getServiceClient().getOptions()
+				.setTimeOutInMilliSeconds(timeOutInMilliSeconds);
+		if (System.getProperty("os.name").equals("Mac OS X")) {
+			wso2appserverHome = "/Users/user/Documents/workspace/wso2esb-4.8.1";
+		} else {
+			wso2appserverHome = "/opt/mats/wso2esb-4.8.1";
+		}
+		if (parameterType.equalsIgnoreCase("production"))
+			try {
+				configureSecurity();
+			} catch (UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+	}
 
 	public static ServiceResponse doCashIn(MoneyTransfer moneyTransfer) {
 		ServiceResponse serviceResponse = new ServiceResponse(), requestServiceResponse = new ServiceResponse();
@@ -89,6 +131,7 @@ public class FetsClient {
 		if (authenticationResponse != null) {
 			moneyTransfer = retrieveWallet(authenticationResponse,
 					moneyTransfer);
+
 			logger.info("----------------------Before setting the ServiceResponse parameters");
 
 			logger.info("----------------------After setting acceptPayment attributes\n"
@@ -337,6 +380,70 @@ public class FetsClient {
 		return serviceResponse;
 	}
 
+	public static ServiceResponse doCashOutUnregistered(
+			MoneyTransfer moneyTransfer) {
+		ServiceResponse serviceResponse = new ServiceResponse(), redeemRequestResp = new ServiceResponse();
+		logger.info("----------------------start of FETS cash out unregistered Type "
+				+ moneyTransfer.getRecieverNumber()
+				+ " ::: "
+				+ moneyTransfer.getTransactionPin());
+		AuthenticateResponse authenticationResponse = doAuthentication(
+				moneyTransfer.getRecieverNumber(),
+				moneyTransfer.getTransactionPin());
+		if (authenticationResponse != null) {
+			moneyTransfer = retrieveWallet(authenticationResponse,
+					moneyTransfer);
+			moneyTransfer.setAgentId(authenticationResponse.getCustomer_id());
+			logger.info("----------------------Before setting the ServiceResponse parameters cash out unregistered");
+
+			logger.info("----------------------After setting acceptPayment attributes\n"
+					+ moneyTransfer.toString());
+
+			// redeemRequestResp.setAmount(moneyTransfer.getAmount());
+			redeemRequestResp.setChannel_id(moneyTransfer.getChannelId());
+			redeemRequestResp.setRecipient_msisdn(moneyTransfer
+					.getRecipientMsisdn());
+
+			redeemRequestResp.setRedeemCode(moneyTransfer.getRedeemCode());
+			redeemRequestResp.setTnxRefNo(moneyTransfer.getTxnRefNo());
+			redeemRequestResp.setAgent_id(moneyTransfer.getAgentId());
+			redeemRequestResp.setWallet_id(moneyTransfer.getPayerWalletId());
+			redeemRequestResp.setAgent_password(moneyTransfer
+					.getTransactionPin());
+
+			RedeemP2UnregisteredTransfer redeemP2UnregisteredTransfer = new RedeemP2UnregisteredTransfer();
+			redeemP2UnregisteredTransfer
+					.setRedeemP2UnregisteredTransfer(redeemRequestResp);
+			RedeemP2UnregisteredTransfer redeemP2UnregisteredTransferResponse = new RedeemP2UnregisteredTransfer();
+			try {
+				fetsStub = new FetsServiceStub();
+				logger.info("----------------------After calling fets stub cash out unregistered");
+				redeemP2UnregisteredTransferResponse = fetsStub
+						.redeemP2UnregisteredTransfer(redeemP2UnregisteredTransfer);
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				logger.info("----------------------Remote Exception after calling fets cash out unregistered");
+				e.printStackTrace();
+			}
+			if (redeemP2UnregisteredTransferResponse != null) {
+				logger.info("----------------------redeemP2UnregisteredTransferResponse is not null cash out unregistered");
+
+				serviceResponse = redeemP2UnregisteredTransferResponse
+						.getRedeemP2UnregisteredTransfer();
+				if (serviceResponse != null) {
+					printResponseDetails(serviceResponse);
+				} else {
+					logger.info("----------------------serviceResponse is null cash out unregistered");
+				}
+			} else {
+				logger.info("----------------------redeemP2UnregisteredTransferResponse is null cash out unregistered");
+			}
+		} else {
+			logger.info("----------------------Authentication response is null cash out unregistered");
+		}
+		return serviceResponse;
+	}
+
 	public static MoneyTransfer retrieveWallet(
 			AuthenticateResponse authenticationResponse,
 			MoneyTransfer moneyTransfer) {
@@ -482,18 +589,59 @@ public class FetsClient {
 		return success;
 	}
 
-	public static void main(String[] args) {
+	@SuppressWarnings("deprecation")
+	public void configureSecurity() throws UnknownHostException, IOException {
+		String clientSSLStore = wso2appserverHome + File.separator
+				+ "repository" + File.separator + "resources" + File.separator
+				+ "security" + File.separator + "client-truststore.jks";
+
+		// wso2carbon.jks client-truststore.jks
+
+		System.getProperties().remove("javax.net.ssl.trustStore");
+		System.getProperties().remove("javax.net.ssl.trustStoreType");
+		System.getProperties().remove("javax.net.ssl.trustStorePassword");
+
+		System.setProperty("javax.net.ssl.trustStore", clientSSLStore);
+		System.setProperty("javax.net.ssl.trustStoreType", "JKS");
+		System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+		System.setProperty("jsse.enableSNIExtension", "false");
+		System.setProperty("javax.net.debug", "ssl");
+		System.setProperty("https.protocols", "SSLv3");
+		System.setProperty("https.protocols", "TLSV");
+		// java.lang.System.setProperty("jdk.tls.client.protocols",
+		// "TLSv1,TLSv1.1,TLSv1.2");
+		Protocol myProtocolHandler = new Protocol("https",
+				new SSL3ProtocolSocketFactory(), 443);
+
+		fetsStub._getServiceClient()
+				.getOptions()
+				.setProperty(HTTPConstants.CUSTOM_PROTOCOL_HANDLER,
+						myProtocolHandler);
+
+		// fundgateStub._getServiceClient().getOptions()
+		// .setProperty(HTTPConstants.CHUNKED, "false");
+
+	}
+
+	public static void main(String[] args) throws AxisFault {
 
 		MoneyTransfer moneyTransfer = new FetsPropertyValues()
 				.getPropertyValues();
-		// verifyCashout(moneyTransfer);
-		// doCashOut(moneyTransfer);// logger.info("THE FINAL BALANCE IS>>>>>" +
-		// getBalance(moneyTransfer));
+		// new FetsClient(moneyTransfer.getParameterType())
+		// .verifyCashout(moneyTransfer);
+		// new FetsClient(moneyTransfer.getParameterType())
+		// .doCashOut(moneyTransfer);
+		logger.info("THE FINAL BALANCE IS>>>>>"
+				+ new FetsClient(moneyTransfer.getParameterType())
+						.getBalance(moneyTransfer));
+		// new FetsClient(moneyTransfer.getParameterType())
+		// .doCashOutUnregistered(moneyTransfer);
 
-		logger.info("----------------------------Balance retrieved:::"
-				+ getBalance(moneyTransfer));
-		// doCashIn(moneyTransfer);
-		// walletToBank(moneyTransfer);
+		// logger.info("----------------------------Balance retrieved:::"
+		// + getBalance(moneyTransfer));
+		// new FetsClient(moneyTransfer.getParameterType())
+		// .doCashIn(moneyTransfer);
+		// new FetsClient(moneyTransfer.getParameterType())
+		// .walletToBank(moneyTransfer);
 	}
-
 }

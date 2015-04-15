@@ -75,8 +75,15 @@ public class FetsPropertyValues {
 				+ parameterType));
 		moneyTransfer.setAccountNumber(prop.getProperty("AccountNumber_"
 				+ parameterType));
+		moneyTransfer.setRedeemCode(prop.getProperty("RedeemCode_"
+				+ parameterType));
+		moneyTransfer
+				.setTxnRefNo(prop.getProperty("TxnRefNo_" + parameterType));
+		moneyTransfer.setRecipientMsisdn(prop.getProperty("RecipientMSISDN_"
+				+ parameterType));
 		moneyTransfer
 				.setBankCode(prop.getProperty("BankCode_" + parameterType));
+		moneyTransfer.setParameterType(parameterType);
 
 		return moneyTransfer;
 	}
