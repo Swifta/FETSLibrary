@@ -23,6 +23,8 @@ public class MoneyTransfer {
 	private String txnRefNo;
 	private long agentId;
 	private String recipientMsisdn;
+	private String trustStoreLocation;
+	private String trustStorePassword;
 
 	public MoneyTransfer() {
 		this.parameterType = "";
@@ -47,6 +49,8 @@ public class MoneyTransfer {
 		this.txnRefNo = "";
 		this.agentId = 0l;
 		this.recipientMsisdn = "";
+		this.trustStoreLocation = "";
+		this.trustStorePassword = "";
 	}
 
 	public String toString() {
@@ -73,7 +77,9 @@ public class MoneyTransfer {
 				.concat(redeemCode).concat("\nTxnRefNo : ").concat(txnRefNo)
 				.concat("\nAgent ID : ").concat(String.valueOf(agentId))
 				.concat("\nRecipient MSISDN : ").concat(recipientMsisdn)
-				.concat("\nParameter Type : ").concat(parameterType);
+				.concat("\nParameter Type : ").concat(parameterType)
+				.concat("\nTrust Store Location : ").concat(trustStoreLocation)
+				.concat("\nTrust Store Password : ").concat(trustStorePassword);
 
 	}
 
@@ -251,6 +257,22 @@ public class MoneyTransfer {
 
 	public void setParameterType(String parameterType) {
 		this.parameterType = parameterType;
+	}
+
+	public String getTrustStoreLocation() {
+		return trustStoreLocation;
+	}
+
+	public void setTrustStoreLocation(String trustStoreLocation) {
+		this.trustStoreLocation = trustStoreLocation;
+	}
+
+	public String getTrustStorePassword() {
+		return trustStorePassword;
+	}
+
+	public void setTrustStorePassword(String trustStorePassword) {
+		this.trustStorePassword = trustStorePassword;
 	}
 
 }

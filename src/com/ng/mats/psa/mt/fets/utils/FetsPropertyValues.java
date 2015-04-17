@@ -83,6 +83,10 @@ public class FetsPropertyValues {
 				+ parameterType));
 		moneyTransfer
 				.setBankCode(prop.getProperty("BankCode_" + parameterType));
+		moneyTransfer.setTrustStoreLocation(prop
+				.getProperty("TrustStoreLocation_" + parameterType));
+		moneyTransfer.setTrustStorePassword(prop
+				.getProperty("TrustStorePassword_" + parameterType));
 		moneyTransfer.setParameterType(parameterType);
 
 		return moneyTransfer;

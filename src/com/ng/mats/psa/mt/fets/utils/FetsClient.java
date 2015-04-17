@@ -1,6 +1,5 @@
 package com.ng.mats.psa.mt.fets.utils;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.rmi.RemoteException;
@@ -22,7 +21,8 @@ import com.fets.mm.soap.services.FetsServiceStub.RedeemP2UnregisteredTransfer;
 import com.fets.mm.soap.services.FetsServiceStub.ServiceResponse;
 import com.fets.mm.soap.services.FetsServiceStub.Wallet;
 
-/*import com.fets.mm.soap.services.test.FetsServiceStub;
+/*
+ import com.fets.mm.soap.services.test.FetsServiceStub;
  import com.fets.mm.soap.services.test.FetsServiceStub.Authenticate;
  import com.fets.mm.soap.services.test.FetsServiceStub.AuthenticateResponse;
  import com.fets.mm.soap.services.test.FetsServiceStub.CashOutRequest;
@@ -37,22 +37,24 @@ public class FetsClient {
 	private static FetsServiceStub fetsStub;
 	private static final Logger logger = Logger.getLogger(FetsClient.class
 			.getName());
-	private String wso2appserverHome = "";
+	// private String wso2appserverHome = "";
+	private String message = "";
 
-	public FetsClient(String parameterType) throws AxisFault {
+	public FetsClient(MoneyTransfer moneyTransfer) throws AxisFault {
 		fetsStub = new FetsServiceStub();
 		fetsStub._getServiceClient().getOptions().setManageSession(true);
 		long timeOutInMilliSeconds = (5 * 36 * 1000);
 		fetsStub._getServiceClient().getOptions()
 				.setTimeOutInMilliSeconds(timeOutInMilliSeconds);
-		if (System.getProperty("os.name").equals("Mac OS X")) {
-			wso2appserverHome = "/Users/user/Documents/workspace/wso2esb-4.8.1";
-		} else {
-			wso2appserverHome = "/opt/mats/wso2esb-4.8.1";
-		}
-		if (parameterType.equalsIgnoreCase("production"))
+		// if (System.getProperty("os.name").equals("Mac OS X")) {
+		// wso2appserverHome = "/Users/user/Documents/workspace/wso2esb-4.8.1";
+		// } else {
+		// wso2appserverHome = "/opt/mats/wso2esb-4.8.1";
+		// }
+		if (moneyTransfer.getParameterType().equalsIgnoreCase("production"))
 			try {
-				configureSecurity();
+				configureSecurity(moneyTransfer.getTrustStoreLocation(),
+						moneyTransfer.getTrustStorePassword());
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -79,8 +81,8 @@ public class FetsClient {
 			requestServiceResponse.setAmount(moneyTransfer.getAmount());
 			requestServiceResponse.setChannel_id(moneyTransfer.getChannelId());
 			requestServiceResponse.setDestination_msisdn(moneyTransfer
-					.getRecieverNumber());
-			requestServiceResponse.setMsisdn(moneyTransfer.getPayerNumber());
+					.getPayerNumber());
+			requestServiceResponse.setMsisdn(moneyTransfer.getRecieverNumber());
 			requestServiceResponse.setNaration(moneyTransfer.getRemarks());
 			requestServiceResponse.setPassword(moneyTransfer
 					.getTransactionPin());
@@ -487,7 +489,7 @@ public class FetsClient {
 			w2bRequestResp.setAmount(moneyTransfer.getAmount());
 			w2bRequestResp.setBank_code(moneyTransfer.getBankCode());
 			w2bRequestResp.setChannel_id(moneyTransfer.getChannelId());
-			w2bRequestResp.setMsisdn(moneyTransfer.getPayerNumber());
+			w2bRequestResp.setMsisdn(moneyTransfer.getRecieverNumber());
 			w2bRequestResp.setNaration(moneyTransfer.getRemarks());
 			w2bRequestResp.setPassword(moneyTransfer.getTransactionPin());
 			w2bRequestResp.setWallet_id(moneyTransfer.getPayerWalletId());
@@ -522,12 +524,13 @@ public class FetsClient {
 		return serviceResponse;
 	}
 
-	public static Boolean verifyCashout(MoneyTransfer moneyTransfer) {
+	public Boolean verifyCashout(MoneyTransfer moneyTransfer) {
 		logger.info("----------------------inside the verify cashout");
 		Boolean success = null;
 		AuthenticateResponse authenticationResponse = doAuthentication(
 				moneyTransfer.getRecieverNumber(),
 				moneyTransfer.getTransactionPin());
+		String returnedMessage = "No response";
 		logger.info("----------------------after AuthenticationResponse >>>>>");
 		if (authenticationResponse != null) {
 			logger.info("----------------------after AuthenticationResponse >>>>> NOT NULL");
@@ -542,8 +545,9 @@ public class FetsClient {
 
 			ConnectionTester conTester = new ConnectionTester();
 			String responseFormat = conTester.connectToURL(
-					moneyTransfer.getUrl(), parameters);
+					moneyTransfer.getUrl(), parameters, moneyTransfer);
 			JSONObject json = null;
+
 			try {
 				logger.info("----------------------converting response to json object>>"
 						+ responseFormat);
@@ -551,7 +555,7 @@ public class FetsClient {
 				// "redeemCode":null,"wallet_id":0,"channel_id":0,"merchant_id":0,"product_id":0,"agent_id":0,"amount":0.0}
 				int responseCode = json.getInt("responseCode");
 				success = json.getBoolean("success");
-				String message = json.getString("message");
+				returnedMessage = json.getString("message");
 				String bankCode = json.getString("bank_code");
 				String accountNumber = json.getString("account_no");
 				String beneficiaryMSISDN = json.getString("ben_msisdn");
@@ -586,14 +590,16 @@ public class FetsClient {
 		} else {
 			logger.info("----------------------after AuthenticationResponse >>>>> is NULL");
 		}
+		setMessage(returnedMessage);
 		return success;
 	}
 
 	@SuppressWarnings("deprecation")
-	public void configureSecurity() throws UnknownHostException, IOException {
-		String clientSSLStore = wso2appserverHome + File.separator
-				+ "repository" + File.separator + "resources" + File.separator
-				+ "security" + File.separator + "client-truststore.jks";
+	public void configureSecurity(String clientSSLStore,
+			String clientSSLPassword) throws UnknownHostException, IOException {
+		// String clientSSLStore = wso2appserverHome + File.separator
+		// + "repository" + File.separator + "resources" + File.separator
+		// + "security" + File.separator + "client-truststore.jks";
 
 		// wso2carbon.jks client-truststore.jks
 
@@ -603,11 +609,12 @@ public class FetsClient {
 
 		System.setProperty("javax.net.ssl.trustStore", clientSSLStore);
 		System.setProperty("javax.net.ssl.trustStoreType", "JKS");
-		System.setProperty("javax.net.ssl.trustStorePassword", "wso2carbon");
+		System.setProperty("javax.net.ssl.trustStorePassword",
+				clientSSLPassword);
 		System.setProperty("jsse.enableSNIExtension", "false");
 		System.setProperty("javax.net.debug", "ssl");
 		System.setProperty("https.protocols", "SSLv3");
-		System.setProperty("https.protocols", "TLSV");
+		// System.setProperty("https.protocols", "TLSV");
 		// java.lang.System.setProperty("jdk.tls.client.protocols",
 		// "TLSv1,TLSv1.1,TLSv1.2");
 		Protocol myProtocolHandler = new Protocol("https",
@@ -627,21 +634,26 @@ public class FetsClient {
 
 		MoneyTransfer moneyTransfer = new FetsPropertyValues()
 				.getPropertyValues();
-		// new FetsClient(moneyTransfer.getParameterType())
-		// .verifyCashout(moneyTransfer);
-		// new FetsClient(moneyTransfer.getParameterType())
-		// .doCashOut(moneyTransfer);
-		logger.info("THE FINAL BALANCE IS>>>>>"
-				+ new FetsClient(moneyTransfer.getParameterType())
-						.getBalance(moneyTransfer));
-		// new FetsClient(moneyTransfer.getParameterType())
-		// .doCashOutUnregistered(moneyTransfer);
+		FetsClient fetsClient = new FetsClient(moneyTransfer);
+		// logger.info("THE STATUS OF THE REFERENCE CODE IS : "
+		// + fetsClient.verifyCashout(moneyTransfer) + " || MESSAGE : "
+		// + fetsClient.getMessage());
+		// fetsClient.doCashOut(moneyTransfer);
+		// logger.info("THE FINAL BALANCE IS>>>>>"
+		// + fetsClient.getBalance(moneyTransfer));
+		// fetsClient.doCashOutUnregistered(moneyTransfer);
 
 		// logger.info("----------------------------Balance retrieved:::"
 		// + getBalance(moneyTransfer));
-		// new FetsClient(moneyTransfer.getParameterType())
-		// .doCashIn(moneyTransfer);
-		// new FetsClient(moneyTransfer.getParameterType())
-		// .walletToBank(moneyTransfer);
+		// fetsClient.doCashIn(moneyTransfer);
+		// fetsClient.walletToBank(moneyTransfer);
+	}
+
+	public String getMessage() {
+		return message;
+	}
+
+	public void setMessage(String message) {
+		this.message = message;
 	}
 }
