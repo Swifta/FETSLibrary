@@ -10,28 +10,27 @@ import org.apache.axis2.transport.http.HTTPConstants;
 import org.apache.commons.httpclient.protocol.Protocol;
 import org.json.me.JSONException;
 import org.json.me.JSONObject;
-
-import com.fets.mm.soap.services.FetsServiceStub;
-import com.fets.mm.soap.services.FetsServiceStub.Authenticate;
-import com.fets.mm.soap.services.FetsServiceStub.AuthenticateResponse;
-import com.fets.mm.soap.services.FetsServiceStub.CashOutRequest;
-import com.fets.mm.soap.services.FetsServiceStub.P2BankTransfer;
-import com.fets.mm.soap.services.FetsServiceStub.P2PTransfer;
-import com.fets.mm.soap.services.FetsServiceStub.RedeemP2UnregisteredTransfer;
-import com.fets.mm.soap.services.FetsServiceStub.ServiceResponse;
-import com.fets.mm.soap.services.FetsServiceStub.Wallet;
-
 /*
- import com.fets.mm.soap.services.test.FetsServiceStub;
- import com.fets.mm.soap.services.test.FetsServiceStub.Authenticate;
- import com.fets.mm.soap.services.test.FetsServiceStub.AuthenticateResponse;
- import com.fets.mm.soap.services.test.FetsServiceStub.CashOutRequest;
- import com.fets.mm.soap.services.test.FetsServiceStub.P2BankTransfer;
- import com.fets.mm.soap.services.test.FetsServiceStub.P2PTransfer;
- import com.fets.mm.soap.services.test.FetsServiceStub.RedeemP2UnregisteredTransfer;
- import com.fets.mm.soap.services.test.FetsServiceStub.ServiceResponse;
- import com.fets.mm.soap.services.test.FetsServiceStub.Wallet;
+ import com.fets.mm.soap.services.FetsServiceStub;
+ import com.fets.mm.soap.services.FetsServiceStub.Authenticate;
+ import com.fets.mm.soap.services.FetsServiceStub.AuthenticateResponse;
+ import com.fets.mm.soap.services.FetsServiceStub.CashOutRequest;
+ import com.fets.mm.soap.services.FetsServiceStub.P2BankTransfer;
+ import com.fets.mm.soap.services.FetsServiceStub.P2PTransfer;
+ import com.fets.mm.soap.services.FetsServiceStub.RedeemP2UnregisteredTransfer;
+ import com.fets.mm.soap.services.FetsServiceStub.ServiceResponse;
+ import com.fets.mm.soap.services.FetsServiceStub.Wallet;
  */
+
+import com.fets.mm.soap.services.test.FetsServiceStub;
+import com.fets.mm.soap.services.test.FetsServiceStub.Authenticate;
+import com.fets.mm.soap.services.test.FetsServiceStub.AuthenticateResponse;
+import com.fets.mm.soap.services.test.FetsServiceStub.CashOutRequest;
+import com.fets.mm.soap.services.test.FetsServiceStub.P2BankTransfer;
+import com.fets.mm.soap.services.test.FetsServiceStub.P2PTransfer;
+import com.fets.mm.soap.services.test.FetsServiceStub.RedeemP2UnregisteredTransfer;
+import com.fets.mm.soap.services.test.FetsServiceStub.ServiceResponse;
+import com.fets.mm.soap.services.test.FetsServiceStub.Wallet;
 
 public class FetsClient {
 	private static FetsServiceStub fetsStub;
@@ -41,6 +40,7 @@ public class FetsClient {
 	private String message = "";
 
 	public FetsClient(MoneyTransfer moneyTransfer) throws AxisFault {
+		logger.info("------------------------------instantiate fets stub");
 		fetsStub = new FetsServiceStub();
 		fetsStub._getServiceClient().getOptions().setManageSession(true);
 		long timeOutInMilliSeconds = (5 * 36 * 1000);
@@ -53,8 +53,10 @@ public class FetsClient {
 		// }
 		if (moneyTransfer.getParameterType().equalsIgnoreCase("production"))
 			try {
+
 				configureSecurity(moneyTransfer.getTrustStoreLocation(),
 						moneyTransfer.getTrustStorePassword());
+				logger.info("------------------------------after configuring settings");
 			} catch (UnknownHostException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -62,6 +64,9 @@ public class FetsClient {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		else {
+			logger.info("------------------------------not production parameter");
+		}
 	}
 
 	public static ServiceResponse doCashIn(MoneyTransfer moneyTransfer) {
@@ -452,18 +457,20 @@ public class FetsClient {
 		Wallet[] walletArray = authenticationResponse.getWallets();
 		logger.info("----------------------start of FETS wallet iteration");
 		int count = 1;
-		for (Wallet newWallet : walletArray) {
-			logger.info("----------------------iterating through array of wallet : "
-					+ count++);
-			if (newWallet.getDefaultWallet()) {
-				logger.info("----------------------Default wallet "
-						+ newWallet.getId());
-				moneyTransfer.setPayerWalletId(newWallet.getId());
-				break;
-			} else {
-				logger.info("----------------------Wallet not default wallet");
+		if (walletArray != null)
+			for (Wallet newWallet : walletArray) {
+				logger.info(newWallet.getId()
+						+ "----------------------iterating through array of wallet : "
+						+ count++);
+				if (newWallet.getDefaultWallet()) {
+					logger.info("----------------------Default wallet "
+							+ newWallet.getId());
+					moneyTransfer.setPayerWalletId(newWallet.getId());
+					break;
+				} else {
+					logger.info("----------------------Wallet not default wallet");
+				}
 			}
-		}
 		return moneyTransfer;
 	}
 
@@ -524,12 +531,13 @@ public class FetsClient {
 		return serviceResponse;
 	}
 
-	public Boolean verifyCashout(MoneyTransfer moneyTransfer) {
+	public ServiceResponse verifyCashout(MoneyTransfer moneyTransfer) {
 		logger.info("----------------------inside the verify cashout");
 		Boolean success = null;
 		AuthenticateResponse authenticationResponse = doAuthentication(
 				moneyTransfer.getRecieverNumber(),
 				moneyTransfer.getTransactionPin());
+		ServiceResponse serviceResponse = new ServiceResponse();
 		String returnedMessage = "No response";
 		logger.info("----------------------after AuthenticationResponse >>>>>");
 		if (authenticationResponse != null) {
@@ -537,8 +545,13 @@ public class FetsClient {
 			moneyTransfer = retrieveWallet(authenticationResponse,
 					moneyTransfer);
 
-			String parameters = "wallet_id=" + moneyTransfer.getPayerWalletId()
-					+ "&reference=" + moneyTransfer.getReference();
+			// For the old URL
+			// String parameters = "wallet_id="+
+			// moneyTransfer.getPayerWalletId()
+			// + "&reference=" + moneyTransfer.getReference();
+			String parameters = "agent_id="
+					+ authenticationResponse.getCustomer_id() + "&reference="
+					+ moneyTransfer.getReference();
 
 			logger.info("----------------------Before setting the ServiceResponse parameters and the URL is::: "
 					+ parameters);
@@ -581,6 +594,13 @@ public class FetsClient {
 				int productId = json.getInt("product_id");
 				int agentId = json.getInt("agent_id");
 				String amount = json.getString("amount");
+				serviceResponse.setResponseCode(responseCode);
+				serviceResponse.setMessage(message);
+				serviceResponse.setBank_code(bankCode);
+				serviceResponse.setAccount_no(accountNumber);
+				serviceResponse.setTranRefNum(tranRefNum);
+				serviceResponse.setTnxRefNo(tnxRefNo);
+				serviceResponse.setSuccess(success);
 
 			} catch (JSONException e) {
 				logger.info("------------------------There was a json exception. The response is not a valid JSON");
@@ -591,7 +611,7 @@ public class FetsClient {
 			logger.info("----------------------after AuthenticationResponse >>>>> is NULL");
 		}
 		setMessage(returnedMessage);
-		return success;
+		return serviceResponse;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -602,6 +622,7 @@ public class FetsClient {
 		// + "security" + File.separator + "client-truststore.jks";
 
 		// wso2carbon.jks client-truststore.jks
+		logger.info("-------------------------------Configuring the security settings");
 
 		System.getProperties().remove("javax.net.ssl.trustStore");
 		System.getProperties().remove("javax.net.ssl.trustStoreType");
@@ -638,7 +659,7 @@ public class FetsClient {
 		// logger.info("THE STATUS OF THE REFERENCE CODE IS : "
 		// + fetsClient.verifyCashout(moneyTransfer) + " || MESSAGE : "
 		// + fetsClient.getMessage());
-		// fetsClient.doCashOut(moneyTransfer);
+		fetsClient.doCashOut(moneyTransfer);
 		// logger.info("THE FINAL BALANCE IS>>>>>"
 		// + fetsClient.getBalance(moneyTransfer));
 		// fetsClient.doCashOutUnregistered(moneyTransfer);

@@ -14,12 +14,12 @@ public class ConnectionTester {
 			.getLogger(ConnectionTester.class.getName());
 
 	public static void main(String[] args) {
-		String urlPage = "https://fetspay.fetswallet.com/rest/viewTransaction";
-		String parameters = "wallet_id=779321&reference=402578V";
+		String urlPage = "http:testpay1.fetswallet.com/vidicon/rest/viewCashourTrans";
+		String parameters = "agent_id=779321&reference=311469V";
 		// String webPage =
 		// "http://testpay1.fetswallet.com/vidicon/rest/viewTransaction/-1149/310243V";
 		MoneyTransfer moneyTransfer = new MoneyTransfer();
-		moneyTransfer.setParameterType("production");
+		moneyTransfer.setParameterType("test");
 		moneyTransfer
 				.setTrustStoreLocation("/Users/user/Documents/workspace/wso2esb-4.8.1/repository/resources/security/client-truststore.jks");
 		moneyTransfer.setTrustStorePassword("wso2carbon");
