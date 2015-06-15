@@ -560,52 +560,56 @@ public class FetsClient {
 			String responseFormat = conTester.connectToURL(
 					moneyTransfer.getUrl(), parameters, moneyTransfer);
 			JSONObject json = null;
+			if (responseFormat != null)
+				try {
+					logger.info("----------------------converting response to json object>>"
+							+ responseFormat);
+					json = new JSONObject(responseFormat);
+					// "redeemCode":null,"wallet_id":0,"channel_id":0,"merchant_id":0,"product_id":0,"agent_id":0,"amount":0.0}
+					int responseCode = json.getInt("responseCode");
+					success = json.getBoolean("success");
+					returnedMessage = json.getString("message");
+					String bankCode = json.getString("bank_code");
+					String accountNumber = json.getString("account_no");
+					String beneficiaryMSISDN = json.getString("ben_msisdn");
+					String senderMSISDN = json.getString("msisdn");
+					String password = json.getString("password");
+					// String narration = json.getString("narration");
+					String oldPassword = json.getString("old_password");
+					String newPassword = json.getString("new_password");
+					String confirmPassword = json.getString("confirm_password");
+					String customerId = json.getString("customer_id");
+					String accountName = json.getString("accountName");
+					String customerMSISDN = json.getString("customer_msisdn");
+					String destinationMSISDN = json
+							.getString("destination_msisdn");
+					String customerRefNum = json.getString("customerRefNum");
+					String tranRefNum = json.getString("tranRefNum");
+					String agentPassword = json.getString("agent_password");
+					String recipientMSISDN = json.getString("recipient_msisdn");
+					String tnxRefNo = json.getString("tnxRefNo");
+					String redeemCode = json.getString("redeemCode");
+					int walletId = json.getInt("wallet_id");
+					int channelId = json.getInt("channel_id");
+					int merchantId = json.getInt("merchant_id");
+					int productId = json.getInt("product_id");
+					int agentId = json.getInt("agent_id");
+					String amount = json.getString("amount");
+					serviceResponse.setResponseCode(responseCode);
+					serviceResponse.setMessage(message);
+					serviceResponse.setBank_code(bankCode);
+					serviceResponse.setAccount_no(accountNumber);
+					serviceResponse.setTranRefNum(tranRefNum);
+					serviceResponse.setTnxRefNo(tnxRefNo);
+					serviceResponse.setSuccess(success);
 
-			try {
-				logger.info("----------------------converting response to json object>>"
-						+ responseFormat);
-				json = new JSONObject(responseFormat);
-				// "redeemCode":null,"wallet_id":0,"channel_id":0,"merchant_id":0,"product_id":0,"agent_id":0,"amount":0.0}
-				int responseCode = json.getInt("responseCode");
-				success = json.getBoolean("success");
-				returnedMessage = json.getString("message");
-				String bankCode = json.getString("bank_code");
-				String accountNumber = json.getString("account_no");
-				String beneficiaryMSISDN = json.getString("ben_msisdn");
-				String senderMSISDN = json.getString("msisdn");
-				String password = json.getString("password");
-				// String narration = json.getString("narration");
-				String oldPassword = json.getString("old_password");
-				String newPassword = json.getString("new_password");
-				String confirmPassword = json.getString("confirm_password");
-				String customerId = json.getString("customer_id");
-				String accountName = json.getString("accountName");
-				String customerMSISDN = json.getString("customer_msisdn");
-				String destinationMSISDN = json.getString("destination_msisdn");
-				String customerRefNum = json.getString("customerRefNum");
-				String tranRefNum = json.getString("tranRefNum");
-				String agentPassword = json.getString("agent_password");
-				String recipientMSISDN = json.getString("recipient_msisdn");
-				String tnxRefNo = json.getString("tnxRefNo");
-				String redeemCode = json.getString("redeemCode");
-				int walletId = json.getInt("wallet_id");
-				int channelId = json.getInt("channel_id");
-				int merchantId = json.getInt("merchant_id");
-				int productId = json.getInt("product_id");
-				int agentId = json.getInt("agent_id");
-				String amount = json.getString("amount");
-				serviceResponse.setResponseCode(responseCode);
-				serviceResponse.setMessage(message);
-				serviceResponse.setBank_code(bankCode);
-				serviceResponse.setAccount_no(accountNumber);
-				serviceResponse.setTranRefNum(tranRefNum);
-				serviceResponse.setTnxRefNo(tnxRefNo);
-				serviceResponse.setSuccess(success);
-
-			} catch (JSONException e) {
-				logger.info("------------------------There was a json exception. The response is not a valid JSON");
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+				} catch (JSONException e) {
+					logger.info("------------------------There was a json exception. The response is not a valid JSON");
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			else {
+				logger.info("----------------------response from FETS server is null");
 			}
 		} else {
 			logger.info("----------------------after AuthenticationResponse >>>>> is NULL");
@@ -659,14 +663,14 @@ public class FetsClient {
 		// logger.info("THE STATUS OF THE REFERENCE CODE IS : "
 		// + fetsClient.verifyCashout(moneyTransfer) + " || MESSAGE : "
 		// + fetsClient.getMessage());
-		fetsClient.doCashOut(moneyTransfer);
+		// fetsClient.doCashOut(moneyTransfer);
 		// logger.info("THE FINAL BALANCE IS>>>>>"
 		// + fetsClient.getBalance(moneyTransfer));
 		// fetsClient.doCashOutUnregistered(moneyTransfer);
 
 		// logger.info("----------------------------Balance retrieved:::"
 		// + getBalance(moneyTransfer));
-		// fetsClient.doCashIn(moneyTransfer);
+		fetsClient.doCashIn(moneyTransfer);
 		// fetsClient.walletToBank(moneyTransfer);
 	}
 
